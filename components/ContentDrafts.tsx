@@ -40,7 +40,7 @@ export default function ContentDrafts({ drafts, onDraftUpdate }: Props) {
               <div className={`w-1.5 h-1.5 rounded-full ${channelDot[draft.channel]}`} />
               <div>
                 <p className="text-sm text-slate-300">{draft.title}</p>
-                <p className="text-[11px] text-navy-700 mt-0.5 max-w-xs truncate">{draft.preview}</p>
+                <p className="text-[11px] text-navy-700 mt-0.5 max-w-xs truncate whitespace-pre-line line-clamp-2">{draft.preview}</p>
               </div>
             </div>
             <div className="flex gap-1.5">
