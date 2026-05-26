@@ -1,0 +1,22 @@
+{
+  "kpi": {
+    "weeklyPublished": 0,
+    "weeklyTarget": 7,
+    "newInquiries": 0,
+    "contentReactions": 0,
+    "quotePending": 0
+  },
+  "contentDrafts": [
+    { "channel": "thread", "title": "스레드", "preview": "오늘 초안이 없어요 — claude에게 '오늘 콘텐츠 초안 써줘' 를 입력하세요" },
+    { "channel": "instagram", "title": "인스타그램", "preview": "오늘 초안이 없어요" },
+    { "channel": "blog", "title": "블로그", "preview": "오늘 초안이 없어요" }
+  ],
+  "inquiries": [],
+  "weeklyCalendar": {
+    "thread": [false, false, false, false, false, false, false],
+    "instagram": [false, false, false, false, false, false, false],
+    "blog": [false, false, false, false, false, false, false]
+  },
+  "projects": [],
+  "activityLog": []
+}
