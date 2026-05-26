@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import type { ContentDraft, Channel } from '@/types/dashboard'
 
 const channelDot: Record<Channel, string> = {
@@ -9,8 +12,21 @@ const channelDot: Record<Channel, string> = {
 interface Props { drafts: ContentDraft[] }
 
 export default function ContentDrafts({ drafts }: Props) {
+  const [toast, setToast] = useState('')
+
+  const copy = (text: string, msg: string) => {
+    navigator.clipboard.writeText(text)
+    setToast(msg)
+    setTimeout(() => setToast(''), 2000)
+  }
+
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 mb-3">
+    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 mb-3 relative">
+      {toast && (
+        <div className="absolute top-3 right-3 bg-brand-purple text-white text-[11px] px-3 py-1.5 rounded-lg shadow-lg z-10">
+          {toast}
+        </div>
+      )}
       <div className="flex justify-between items-center mb-3">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">콘텐츠 초안</p>
         <span className="text-[10px] bg-indigo-950 text-brand-violet rounded px-2 py-0.5">오늘 생성</span>
@@ -25,8 +41,18 @@ export default function ContentDrafts({ drafts }: Props) {
             </div>
           </div>
           <div className="flex gap-1.5">
-            <button className="bg-brand-purple-dark text-white rounded px-2.5 py-1 text-[11px] hover:bg-brand-purple transition-colors">발행</button>
-            <button className="bg-navy-800 text-slate-500 rounded px-2.5 py-1 text-[11px] hover:bg-navy-700 transition-colors">수정</button>
+            <button
+              onClick={() => copy(draft.preview, `${draft.title} 복사됨`)}
+              className="bg-brand-purple-dark text-white rounded px-2.5 py-1 text-[11px] hover:bg-brand-purple transition-colors"
+            >
+              발행
+            </button>
+            <button
+              onClick={() => copy(draft.preview, '수정용 복사됨')}
+              className="bg-navy-800 text-slate-500 rounded px-2.5 py-1 text-[11px] hover:bg-navy-700 transition-colors"
+            >
+              수정
+            </button>
           </div>
         </div>
       ))}

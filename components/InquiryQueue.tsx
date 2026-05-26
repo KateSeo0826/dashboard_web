@@ -1,10 +1,26 @@
+'use client'
+
+import { useState } from 'react'
 import type { Inquiry } from '@/types/dashboard'
 
 interface Props { inquiries: Inquiry[] }
 
 export default function InquiryQueue({ inquiries }: Props) {
+  const [toast, setToast] = useState('')
+
+  const copy = (text: string, msg: string) => {
+    navigator.clipboard.writeText(text)
+    setToast(msg)
+    setTimeout(() => setToast(''), 2000)
+  }
+
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 relative">
+      {toast && (
+        <div className="absolute top-3 right-3 bg-brand-purple text-white text-[11px] px-3 py-1.5 rounded-lg shadow-lg z-10">
+          {toast}
+        </div>
+      )}
       <div className="flex justify-between items-center mb-3">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">문의 응대</p>
         {inquiries.length > 0 && (
@@ -22,8 +38,18 @@ export default function InquiryQueue({ inquiries }: Props) {
             </div>
             <p className="text-[11px] text-navy-700 mb-2 truncate">{inq.preview}</p>
             <div className="flex gap-1.5">
-              <button className="bg-brand-purple-dark text-white rounded px-2.5 py-1 text-[11px] hover:bg-brand-purple transition-colors">응대 초안 보기</button>
-              <button className="bg-navy-800 text-slate-500 rounded px-2.5 py-1 text-[11px] hover:bg-navy-700 transition-colors">발송</button>
+              <button
+                onClick={() => copy(`문의자: ${inq.name}\n유형: ${inq.type}\n내용: ${inq.preview}`, '문의 내용 복사됨')}
+                className="bg-brand-purple-dark text-white rounded px-2.5 py-1 text-[11px] hover:bg-brand-purple transition-colors"
+              >
+                응대 초안 보기
+              </button>
+              <button
+                onClick={() => copy(inq.preview, '발송용 복사됨')}
+                className="bg-navy-800 text-slate-500 rounded px-2.5 py-1 text-[11px] hover:bg-navy-700 transition-colors"
+              >
+                발송
+              </button>
             </div>
           </div>
         ))
