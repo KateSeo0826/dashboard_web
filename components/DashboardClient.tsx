@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { DashboardData, ContentDraft, Channel } from '@/types/dashboard'
 import Header from './Header'
 import KpiGrid from './KpiGrid'
@@ -10,12 +10,36 @@ import WeeklyCalendar from './WeeklyCalendar'
 import ProjectList from './ProjectList'
 import ActivityLog from './ActivityLog'
 
+const STORAGE_KEY = 'lunar-drafts-v1'
+const today = () => new Date().toLocaleDateString('ko-KR')
+
+function loadSaved(fallback: ContentDraft[]): ContentDraft[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return fallback
+    const { date, drafts } = JSON.parse(raw)
+    return date === today() ? drafts : fallback
+  } catch {
+    return fallback
+  }
+}
+
+function saveDrafts(drafts: ContentDraft[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today(), drafts }))
+}
+
 interface Props { initial: DashboardData }
 
 export default function DashboardClient({ initial }: Props) {
   const [drafts, setDrafts] = useState<ContentDraft[]>(initial.contentDrafts)
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState('')
+
+  // 마운트 후 localStorage에서 오늘 초안 복원
+  useEffect(() => {
+    const saved = loadSaved(initial.contentDrafts)
+    setDrafts(saved)
+  }, [])
 
   const generateDrafts = async (keyword: string) => {
     setGenerating(true)
@@ -28,11 +52,13 @@ export default function DashboardClient({ initial }: Props) {
       })
       const data = await res.json()
       if (data.thread) {
-        setDrafts([
+        const newDrafts: ContentDraft[] = [
           { channel: 'thread', title: '스레드', preview: data.thread },
           { channel: 'instagram', title: '인스타그램', preview: data.instagram },
           { channel: 'blog', title: '블로그', preview: data.blog },
-        ])
+        ]
+        setDrafts(newDrafts)
+        saveDrafts(newDrafts)
       } else {
         setGenError('초안 생성 실패. API 키를 확인해줘.')
       }
@@ -44,7 +70,11 @@ export default function DashboardClient({ initial }: Props) {
   }
 
   const updateDraft = (channel: Channel, content: string) => {
-    setDrafts(prev => prev.map(d => d.channel === channel ? { ...d, preview: content } : d))
+    setDrafts(prev => {
+      const updated = prev.map(d => d.channel === channel ? { ...d, preview: content } : d)
+      saveDrafts(updated)
+      return updated
+    })
   }
 
   return (
